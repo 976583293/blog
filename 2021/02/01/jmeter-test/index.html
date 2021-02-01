@@ -32,7 +32,7 @@
 <meta property="og:description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaTk6.png">
-<meta property="og:image" content="https://imgchr.com/i/yeafX9">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeafX9.png">
 <meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yea4mR.png">
 <meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaITx.png">
 <meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yea501.png">
@@ -48,7 +48,7 @@
 <meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaz7t.png">
 <meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yed9tf.png">
 <meta property="article:published_time" content="2021-02-01T12:19:31.000Z">
-<meta property="article:modified_time" content="2021-02-01T12:38:01.182Z">
+<meta property="article:modified_time" content="2021-02-01T12:40:45.717Z">
 <meta property="article:author" content="Nana">
 <meta property="article:tag" content="JMeter">
 <meta property="article:tag" content="压力测试">
@@ -301,7 +301,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-01 20:19:31 / 修改时间：20:38:01" itemprop="dateCreated datePublished" datetime="2021-02-01T20:19:31+08:00">2021-02-01</time>
+      <time title="创建时间：2021-02-01 20:19:31 / 修改时间：20:40:45" itemprop="dateCreated datePublished" datetime="2021-02-01T20:19:31+08:00">2021-02-01</time>
     </span>
 
   
@@ -369,8 +369,7 @@
 </ul>
 <p>随后便可以安装jmeter了，重新运行<code>helm install your-name incubator/jmeter-suite</code> ，这次成功了，随后出现</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NAME: test</span><br><span class="line">LAST DEPLOYED: Wed Jan 27 17:18:21 2021</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="6-编写脚本"><a href="#6-编写脚本" class="headerlink" title="6 编写脚本"></a>6 编写脚本</h3><h4 id="打开jmeter工具"><a href="#打开jmeter工具" class="headerlink" title="打开jmeter工具"></a>打开jmeter工具</h4><p>在<a target="_blank" rel="noopener" href="http://jmeter.apache.org/download_jmeter.cgi">Jmeter官网</a>下载好jmeter，我下载的是如图的黑色字体版本。<br><img src="https://imgchr.com/i/yeafX9" alt="![yeafX9.png](https://s3.ax1x.com/2021/02/01/yeafX9.png)"></p>
-<p>接着我双击/bin目录下的ApacheJMeter.jar文件，打不开。就算把电脑的那个安全性提醒关掉也打不开，好吧，运行下面的命令强制打开<br><code>java -jar /Users/chrystal/Documents/apache-jmeter-5.4.1\ 2/bin/ApacheJMeter.jar (请把后面的路径改为自己存放文件的路径)</code><br>此时命令行如下图<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yea4mR"><img src="https://s3.ax1x.com/2021/02/01/yea4mR.png" alt="yea4mR.png"></a><br>这说明！不能用这个窗口来跑测试脚本！所以我们要新开一个终端窗口进行后面的操作。<strong>新开的终端窗口记得配置kubernetes环境变量。</strong></p>
+<h3 id="6-编写脚本"><a href="#6-编写脚本" class="headerlink" title="6 编写脚本"></a>6 编写脚本</h3><h4 id="打开jmeter工具"><a href="#打开jmeter工具" class="headerlink" title="打开jmeter工具"></a>打开jmeter工具</h4><p>在<a target="_blank" rel="noopener" href="http://jmeter.apache.org/download_jmeter.cgi">Jmeter官网</a>下载好jmeter，我下载的是如图的黑色字体版本。<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeafX9"><img src="https://s3.ax1x.com/2021/02/01/yeafX9.png" alt="yeafX9.png"></a><br>接着我双击/bin目录下的ApacheJMeter.jar文件，打不开。就算把电脑的那个安全性提醒关掉也打不开，好吧，运行下面的命令强制打开<br><code>java -jar /Users/chrystal/Documents/apache-jmeter-5.4.1\ 2/bin/ApacheJMeter.jar (请把后面的路径改为自己存放文件的路径)</code><br>此时命令行如下图<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yea4mR"><img src="https://s3.ax1x.com/2021/02/01/yea4mR.png" alt="yea4mR.png"></a><br>这说明！不能用这个窗口来跑测试脚本！所以我们要新开一个终端窗口进行后面的操作。<strong>新开的终端窗口记得配置kubernetes环境变量。</strong></p>
 <p>该jar包打开的界面如下<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaITx"><img src="https://s3.ax1x.com/2021/02/01/yeaITx.png" alt="yeaITx.png"></a></p>
 <p>可以把原文章中提到的demo测试脚本用它打开，如图<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yea501"><img src="https://s3.ax1x.com/2021/02/01/yea501.png" alt="yea501.png"></a></p>
 <p>接下来参考demo脚本写一个自己的脚本，具体的基础设置解释在原文章里有。那么测试一下<a target="_blank" rel="noopener" href="https://home.cnblogs.com/blog/">博客园</a>的接口吧。</p>
