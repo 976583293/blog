@@ -24,12 +24,12 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"976583293.github.io","root":"/blog/","images":"/blog/images","scheme":"Muse","version":"8.2.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true}};
   </script>
-<meta name="description" content="##参考的文章压测工具Jmeter-Suite详细操作步骤 ##写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。">
+<meta name="description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。 需要的背">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在Mac上利用压测工具Jmeter-Suite进行一次压测实践的保姆级详细步骤（参考腾讯云文章）">
 <meta property="og:url" content="https://976583293.github.io/blog/2021/02/01/jmeter-test/index.html">
 <meta property="og:site_name" content="Nana&#39;s Blog">
-<meta property="og:description" content="##参考的文章压测工具Jmeter-Suite详细操作步骤 ##写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。">
+<meta property="og:description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。 需要的背">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128192542201-300916945.png">
 <meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128112808907-709044756.png">
@@ -48,7 +48,7 @@
 <meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128164451383-1237225730.png">
 <meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128165055353-1436304318.png">
 <meta property="article:published_time" content="2021-02-01T12:19:31.000Z">
-<meta property="article:modified_time" content="2021-02-01T12:20:38.030Z">
+<meta property="article:modified_time" content="2021-02-01T12:25:16.653Z">
 <meta property="article:author" content="Nana">
 <meta property="article:tag" content="JMeter">
 <meta property="article:tag" content="压力测试">
@@ -194,7 +194,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -207,6 +207,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%9A%84%E6%96%87%E7%AB%A0"><span class="nav-number">1.</span> <span class="nav-text">参考的文章</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E6%AD%A4%E6%96%87%E7%9A%84%E7%9B%AE%E7%9A%84"><span class="nav-number">2.</span> <span class="nav-text">写此文的目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E7%9A%84%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">3.</span> <span class="nav-text">需要的背景知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E7%B3%BB%E7%BB%9F"><span class="nav-number">4.</span> <span class="nav-text">我的系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%A6%E7%BB%86%E6%AD%A5%E9%AA%A4"><span class="nav-number">5.</span> <span class="nav-text">详细步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85brew"><span class="nav-number">5.1.</span> <span class="nav-text">1 安装brew</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85wget"><span class="nav-number">5.2.</span> <span class="nav-text">2 安装wget</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AE%89%E8%A3%85helm"><span class="nav-number">5.3.</span> <span class="nav-text">3 安装helm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%89%E8%A3%85kubectl"><span class="nav-number">5.4.</span> <span class="nav-text">4 安装kubectl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%83%A8%E7%BD%B2%E5%8E%8B%E6%B5%8B%E9%9B%86%E7%BE%A4"><span class="nav-number">5.5.</span> <span class="nav-text">5 部署压测集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BC%96%E5%86%99%E8%84%9A%E6%9C%AC"><span class="nav-number">5.6.</span> <span class="nav-text">6 编写脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%93%E5%BC%80jmeter%E5%B7%A5%E5%85%B7"><span class="nav-number">5.6.1.</span> <span class="nav-text">打开jmeter工具</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E8%84%9A%E6%9C%AC"><span class="nav-number">5.6.2.</span> <span class="nav-text">设置脚本</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%8F%91%E8%B5%B7%E6%B5%8B%E8%AF%95"><span class="nav-number">5.7.</span> <span class="nav-text">7 发起测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E6%9F%A5%E7%9C%8B%E7%BB%93%E6%9E%9C"><span class="nav-number">5.8.</span> <span class="nav-text">8 查看结果</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -300,7 +301,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-01 20:19:31 / 修改时间：20:20:38" itemprop="dateCreated datePublished" datetime="2021-02-01T20:19:31+08:00">2021-02-01</time>
+      <time title="创建时间：2021-02-01 20:19:31 / 修改时间：20:25:16" itemprop="dateCreated datePublished" datetime="2021-02-01T20:19:31+08:00">2021-02-01</time>
     </span>
 
   
@@ -320,28 +321,23 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>##参考的文章<br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1776927">压测工具Jmeter-Suite详细操作步骤</a></p>
-<p>##写此文的目的<br>由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正<strong>零基础</strong>地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。</p>
-<a id="more"></a>
-
-<p>##需要的背景知识</p>
-<ul>
+        <h2 id="参考的文章"><a href="#参考的文章" class="headerlink" title="参考的文章"></a>参考的文章</h2><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1776927">压测工具Jmeter-Suite详细操作步骤</a></p>
+<h2 id="写此文的目的"><a href="#写此文的目的" class="headerlink" title="写此文的目的"></a>写此文的目的</h2><p>由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正<strong>零基础</strong>地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。</p>
+<h2 id="需要的背景知识"><a href="#需要的背景知识" class="headerlink" title="需要的背景知识"></a>需要的背景知识</h2><ul>
 <li>阅读《kubernetes权威指南》第一章  （了解kubernetes的基本概念）</li>
 <li>阅读 <a target="_blank" rel="noopener" href="https://www.zhihu.com/column/p/26729512">JMeter介绍</a>   （了解jmeter的作用）</li>
 </ul>
-<p>##我的系统<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128192542201-300916945.png"></p>
-<p>##详细步骤<br>省略购买压测机器部分的内容，直接跳到<strong>压测工具安装</strong>部分开始 。<br>###1 安装brew</p>
-<blockquote>
+<h2 id="我的系统"><a href="#我的系统" class="headerlink" title="我的系统"></a>我的系统</h2><p><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128192542201-300916945.png"></p>
+<h2 id="详细步骤"><a href="#详细步骤" class="headerlink" title="详细步骤"></a>详细步骤</h2><p>省略购买压测机器部分的内容，直接跳到<strong>压测工具安装</strong>部分开始 。</p>
+<h3 id="1-安装brew"><a href="#1-安装brew" class="headerlink" title="1 安装brew"></a>1 安装brew</h3><blockquote>
 <p>brew是一个mac上面很好用的软件管理系统，可以简化mac上的安装过程。</p>
 </blockquote>
 <p>我用了一个知乎专栏上的自动化脚本，链接是<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/111014448">Homebrew国内如何自动安装（国内地址）</a> ，真诚表白作者，原本下载速度很慢的，现在下载速度飞升 T^T<br>ps安装期间我遇到了各种问题，因为我原本的mac系统很低，安装了低版本的brew，不知道啥原因死活装不上新版本，我干脆重新装了个机，重新安装，就非常顺利</p>
-<p>###2 安装wget</p>
-<blockquote>
+<h3 id="2-安装wget"><a href="#2-安装wget" class="headerlink" title="2 安装wget"></a>2 安装wget</h3><blockquote>
 <p>Linux系统上一个下载文件的工具。</p>
 </blockquote>
 <p>其实我感觉它的功能和brew挺像的，但由于我参考的文章里用了wget那我就用吧（）<br>用<code>brew install wget</code>命令，我在这一步很顺利，省略之 。</p>
-<p>###3 安装helm</p>
-<blockquote>
+<h3 id="3-安装helm"><a href="#3-安装helm" class="headerlink" title="3 安装helm"></a>3 安装helm</h3><blockquote>
 <p>Helm 是Deis 开发的一个用于Kubernetes 应用的包管理工具，主要用来管理Charts。<br>chart 是描述相关的一组Kubernetes资源的文件集合。单个chart可能用于部署简单的东西，比如memcached pod，或者一些复杂的东西，比如完整的具有HTTP 服务，数据库，缓存等的Web 应用程序堆栈。chart通过创建为特定目录树的文件，将它们打包到版本化的压缩包，然后进行部署。</p>
 </blockquote>
 <p>按照文档上的操作，我在运行完</p>
@@ -351,14 +347,13 @@
 <p>原因似乎是之前已经装了一次helm，文件重复了<br>于是我按照提示，运行</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rm '/usr/local/bin/helm'</span><br><span class="line">brew link helm</span><br><span class="line">brew install kubernetes-helm</span><br></pre></td></tr></tbody></table></figure>
 <p>安装helm的过程到此结束。</p>
-<p>###4 安装kubectl</p>
-<blockquote>
+<h3 id="4-安装kubectl"><a href="#4-安装kubectl" class="headerlink" title="4 安装kubectl"></a>4 安装kubectl</h3><blockquote>
 <p>kubectl是Kubernetes 命令行工具，使得你可以对 Kubernetes 集群运行命令。 你可以使用 kubectl 来部署应用、监测和管理集群资源以及查看日志。</p>
 </blockquote>
 <p>由于前面我们已经安装了brew，所以可以直接运行<code>brew install kubectl</code> 。<br>再运行<code>kubectl version</code>来确定是否安装成功，当出现类似于</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.2", GitCommit:"faecb196815e248d3ecfb03c680a4507229c2a56", GitTreeState:"clean", BuildDate:"2021-01-14T05:14:17Z", GoVersion:"go1.15.6", Compiler:"gc", Platform:"darwin/amd64"}</span><br><span class="line">Server Version: version.Info{Major:"1", Minor:"18+", GitVersion:"v1.18.4-tke.3", GitCommit:"f8797eb035aca9c928af02ea9a74d232cfd41bc6", GitTreeState:"clean", BuildDate:"2020-10-12T03:32:01Z", GoVersion:"go1.14.8", Compiler:"gc", Platform:"linux/amd64"}</span><br></pre></td></tr></tbody></table></figure>
 <p>的代码时说明已经安装成功啦。</p>
-<p>###5 部署压测集群<br>接着按照文章的内容，运行</p>
+<h3 id="5-部署压测集群"><a href="#5-部署压测集群" class="headerlink" title="5 部署压测集群"></a>5 部署压测集群</h3><p>接着按照文章的内容，运行</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/tkestack/charts.git</span><br><span class="line">cd charts/</span><br><span class="line">helm install your-name incubator/jmeter-suite  （这里的your-name请更改为自己给服务取的名字）</span><br></pre></td></tr></tbody></table></figure>
 <p>然后出现报错</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error: Kubernetes cluster unreachable: </span><br><span class="line">Get "http://localhost:8080/version?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused</span><br></pre></td></tr></tbody></table></figure>
@@ -372,22 +367,22 @@
 </ul>
 <p>随后便可以安装jmeter了，重新运行<code>helm install your-name incubator/jmeter-suite</code> ，这次成功了，随后出现</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NAME: test</span><br><span class="line">LAST DEPLOYED: Wed Jan 27 17:18:21 2021</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br></pre></td></tr></tbody></table></figure>
-<p>###6 编写脚本<br>####打开jmeter工具<br>在<a target="_blank" rel="noopener" href="http://jmeter.apache.org/download_jmeter.cgi">Jmeter官网</a>下载好jmeter，我下载的是如图的黑色字体版本。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128112808907-709044756.png"></p>
+<h3 id="6-编写脚本"><a href="#6-编写脚本" class="headerlink" title="6 编写脚本"></a>6 编写脚本</h3><h4 id="打开jmeter工具"><a href="#打开jmeter工具" class="headerlink" title="打开jmeter工具"></a>打开jmeter工具</h4><p>在<a target="_blank" rel="noopener" href="http://jmeter.apache.org/download_jmeter.cgi">Jmeter官网</a>下载好jmeter，我下载的是如图的黑色字体版本。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128112808907-709044756.png"></p>
 <p>接着我双击/bin目录下的ApacheJMeter.jar文件，打不开。就算把电脑的那个安全性提醒关掉也打不开，好吧，运行下面的命令强制打开<br><code>java -jar /Users/chrystal/Documents/apache-jmeter-5.4.1\ 2/bin/ApacheJMeter.jar (请把后面的路径改为自己存放文件的路径)</code><br>此时命令行如下图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153435642-204495638.png"><br>这说明！不能用这个窗口来跑测试脚本！所以我们要新开一个终端窗口进行后面的操作。<strong>新开的终端窗口记得配置kubernetes环境变量。</strong></p>
 <p>该jar包打开的界面如下<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113245718-1612241731.png"></p>
 <p>可以把原文章中提到的demo测试脚本用它打开，如图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113956129-1944218852.png"></p>
 <p>接下来参考demo脚本写一个自己的脚本，具体的基础设置解释在原文章里有。那么测试一下<a target="_blank" rel="noopener" href="https://home.cnblogs.com/blog/">博客园</a>的接口吧。</p>
-<p>####设置脚本<br>在jmeter处新建个文件，添加线程组<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153845661-1981468078.png"><br>下面红框处是我更改后的配置，重要的是我设置了5000个线程，循环2次。*<em>（</em>我后来改了，因为线程组太多了，测试停不下来，改成了50x200）**<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154430799-1150394626.png"><br>右键线程组，添加http请求，并设置IP地址。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154726479-1291219254.png"><br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154932494-1538521586.png"><br>到这里我们基本配置好了线程组的内容，也就是说我们在这次测试中会向博客园发送10000个http请求来测试它的承受能力，但是我们还需要对返回的结果进行分析，所以还要再添加一些监听器来处理结果。</p>
+<h4 id="设置脚本"><a href="#设置脚本" class="headerlink" title="设置脚本"></a>设置脚本</h4><p>在jmeter处新建个文件，添加线程组<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153845661-1981468078.png"><br>下面红框处是我更改后的配置，重要的是我设置了5000个线程，循环2次。*<em>（</em>我后来改了，因为线程组太多了，测试停不下来，改成了50x200）**<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154430799-1150394626.png"><br>右键线程组，添加http请求，并设置IP地址。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154726479-1291219254.png"><br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154932494-1538521586.png"><br>到这里我们基本配置好了线程组的内容，也就是说我们在这次测试中会向博客园发送10000个http请求来测试它的承受能力，但是我们还需要对返回的结果进行分析，所以还要再添加一些监听器来处理结果。</p>
 <ul>
 <li>添加后端监听器<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128160255678-365071639.png"><br>对其进行简单设置<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128171407839-982811206.png"></li>
 <li>添加察看结果树<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128155849233-319381560.png"><br>自己喜欢啥就添加啥吧，我感觉作用都差不多，在这里我添加了<strong>察看结果树</strong>和<strong>汇总图</strong>。</li>
 </ul>
 <p>配置完所有东西后，我们运行一下脚本看看有无错误。<br>果然有错误啊，我的人生果然不会这么一帆风顺啊（）运行一会儿很快就退出了，点击察看结果树出来的全是错误，<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128162605380-123415813.png"><br>然后点击响应数据去查看返回了啥错误<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128163131165-971324307.png"><br>这里说请求的host的格式错误。经过我的一番研究，原来我在上面的设置IP地址时直接复制了博客园的主页，包含了特殊符号。也就是说具体的路径不能写在服务器IP地址那里，正确写法应该是这样<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128164451383-1237225730.png"><br>改完以后再运行，就非常顺利，如图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128165055353-1436304318.png"></p>
 <p>脚本编写到此完成！</p>
-<p>###7 发起测试<br>运行<code>kubectl get pods </code>确认一下有没有连接到kubernetes集群，出现了类似于</p>
+<h3 id="7-发起测试"><a href="#7-发起测试" class="headerlink" title="7 发起测试"></a>7 发起测试</h3><p>运行<code>kubectl get pods </code>确认一下有没有连接到kubernetes集群，出现了类似于</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NAME                                              READY   STATUS    RESTARTS   AGE</span><br><span class="line">jmeter-influxdb-0                                 1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-master-77749c5845-89c6w   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-2hxvg   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-fztws   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-lmsdw   1/1     Running   0          23h</span><br><span class="line">test-grafana-584875d9d4-zsfzz                     1/1     Running   0          23h</span><br></pre></td></tr></tbody></table></figure>
 <p>的内容就是连接成功了。<br>然后运行<code>sh start_test.sh 你的文件目录</code>，就可以在集群上进行测试了。</p>
-<p>###8 查看结果<br>运行完成以后终端窗口会出现</p>
+<h3 id="8-查看结果"><a href="#8-查看结果" class="headerlink" title="8 查看结果"></a>8 查看结果</h3><p>运行完成以后终端窗口会出现</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Creating summariser &lt;summary&gt;</span><br><span class="line">Created the tree successfully using /jmeter/test2.jmx</span><br><span class="line">Configuring remote engine: 192.168.0.131</span><br><span class="line">Configuring remote engine: 192.168.0.189</span><br><span class="line">Configuring remote engine: 192.168.0.134</span><br><span class="line">Starting distributed test with remote engines: [192.168.0.189, 192.168.0.134, 192.168.0.131] @ Thu Jan 28 09:16:07 UTC 2021 (1611825367766)</span><br><span class="line">Remote engines have been started:[192.168.0.189, 192.168.0.134, 192.168.0.131]</span><br><span class="line">Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445</span><br><span class="line">summary +   3104 in 00:00:22 =  143.4/s Avg:   598 Min:    40 Max: 16565 Err:     6 (0.19%) Active: 150 Started: 150 Finished: 0</span><br><span class="line">summary +   4400 in 00:00:30 =  146.3/s Avg:   772 Min:    41 Max: 32547 Err:     4 (0.09%) Active: 150 Started: 150 Finished: 0</span><br><span class="line">summary =   7504 in 00:00:52 =  145.1/s Avg:   700 Min:    40 Max: 32547 Err:    10 (0.13%)</span><br><span class="line">summary +   4600 in 00:00:31 =  150.6/s Avg:   854 Min:    40 Max: 64926 Err:     7 (0.15%) Active: 149 Started: 150 Finished: 1</span><br><span class="line">summary =  12104 in 00:01:22 =  147.1/s Avg:   759 Min:    40 Max: 64926 Err:    17 (0.14%)</span><br><span class="line">summary +   4400 in 00:00:30 =  149.0/s Avg:   742 Min:    42 Max: 68044 Err:     2 (0.05%) Active: 132 Started: 150 Finished: 18</span><br><span class="line">summary =  16504 in 00:01:52 =  147.6/s Avg:   754 Min:    40 Max: 68044 Err:    19 (0.12%)</span><br><span class="line">summary +   4500 in 00:00:30 =  150.5/s Avg:  1100 Min:    42 Max: 131100 Err:    13 (0.29%) Active: 98 Started: 150 Finished: 52</span><br><span class="line">summary =  21004 in 00:02:22 =  148.2/s Avg:   828 Min:    40 Max: 131100 Err:    32 (0.15%)</span><br><span class="line">summary +   4600 in 00:00:30 =  153.0/s Avg:   801 Min:    41 Max: 130543 Err:    11 (0.24%) Active: 51 Started: 150 Finished: 99</span><br><span class="line">summary =  25604 in 00:02:52 =  149.1/s Avg:   823 Min:    40 Max: 131100 Err:    43 (0.17%)</span><br><span class="line">summary +   4396 in 00:01:12 =   61.0/s Avg:   438 Min:    40 Max: 131063 Err:     7 (0.16%) Active: 0 Started: 150 Finished: 150</span><br><span class="line">summary =  30000 in 00:04:04 =  123.0/s Avg:   767 Min:    40 Max: 131100 Err:    50 (0.17%)</span><br><span class="line">Tidying up remote @ Thu Jan 28 09:20:12 UTC 2021 (1611825612504)</span><br><span class="line">... end of run</span><br></pre></td></tr></tbody></table></figure>
 <p>然后原文章很详细地写了如何查看结果，这里省略。</p>
 
