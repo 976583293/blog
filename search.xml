@@ -51,7 +51,8 @@
 <blockquote>
 <p><strong>接口测试</strong>是测试系统组件间接口的测试，主要用于检测外部系统与系统之间以及内部各个子系统之间的交互点；测试原理是通过测试程序模拟客户端向服务器发送请求报文，服务器接收并处理报文然后发送应答报文，客户端再接收服务器相应发出的应答报文这一过程。                  </p>
 </blockquote>
-<h5 id="实现接口测试的方法"><a href="#实现接口测试的方法" class="headerlink" title="实现接口测试的方法"></a>实现接口测试的方法</h5><ul>
+<p><strong>实现接口测试的方法</strong></p>
+<ul>
 <li>使用接口测试工具：apipost、jmeter、loadrunner。</li>
 <li>通过脚本进行接口测试，一般使用python+requests。</li>
 </ul>
