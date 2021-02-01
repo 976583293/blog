@@ -15,6 +15,85 @@
 ]]></content>
   </entry>
   <entry>
+    <title>在Mac上利用压测工具Jmeter-Suite进行一次压测实践的保姆级详细步骤（参考腾讯云文章）</title>
+    <url>/blog/2021/02/01/jmeter-test/</url>
+    <content><![CDATA[<p>##参考的文章<br><a href="https://cloud.tencent.com/developer/article/1776927">压测工具Jmeter-Suite详细操作步骤</a></p>
+<p>##写此文的目的<br>由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正<strong>零基础</strong>地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。</p>
+<a id="more"></a>
+
+<p>##需要的背景知识</p>
+<ul>
+<li>阅读《kubernetes权威指南》第一章  （了解kubernetes的基本概念）</li>
+<li>阅读 <a href="https://www.zhihu.com/column/p/26729512">JMeter介绍</a>   （了解jmeter的作用）</li>
+</ul>
+<p>##我的系统<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128192542201-300916945.png"></p>
+<p>##详细步骤<br>省略购买压测机器部分的内容，直接跳到<strong>压测工具安装</strong>部分开始 。<br>###1 安装brew</p>
+<blockquote>
+<p>brew是一个mac上面很好用的软件管理系统，可以简化mac上的安装过程。</p>
+</blockquote>
+<p>我用了一个知乎专栏上的自动化脚本，链接是<a href="https://zhuanlan.zhihu.com/p/111014448">Homebrew国内如何自动安装（国内地址）</a> ，真诚表白作者，原本下载速度很慢的，现在下载速度飞升 T^T<br>ps安装期间我遇到了各种问题，因为我原本的mac系统很低，安装了低版本的brew，不知道啥原因死活装不上新版本，我干脆重新装了个机，重新安装，就非常顺利</p>
+<p>###2 安装wget</p>
+<blockquote>
+<p>Linux系统上一个下载文件的工具。</p>
+</blockquote>
+<p>其实我感觉它的功能和brew挺像的，但由于我参考的文章里用了wget那我就用吧（）<br>用<code>brew install wget</code>命令，我在这一步很顺利，省略之 。</p>
+<p>###3 安装helm</p>
+<blockquote>
+<p>Helm 是Deis 开发的一个用于Kubernetes 应用的包管理工具，主要用来管理Charts。<br>chart 是描述相关的一组Kubernetes资源的文件集合。单个chart可能用于部署简单的东西，比如memcached pod，或者一些复杂的东西，比如完整的具有HTTP 服务，数据库，缓存等的Web 应用程序堆栈。chart通过创建为特定目录树的文件，将它们打包到版本化的压缩包，然后进行部署。</p>
+</blockquote>
+<p>按照文档上的操作，我在运行完</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">wget https://get.helm.sh/helm-v3.2.1-linux-amd64.tar.gz </span><br><span class="line">tar -zxvf helm-v3.2.1-linux-amd64.tar.gz </span><br><span class="line">cp linux-amd64/helm /usr/local/bin/</span><br></pre></td></tr></tbody></table></figure>
+<p>后，出现了<code>zsh: exec format error: helm </code>的报错 ，简单搜索了一下，似乎是无法解析文件？于是我又重新进行安装helm的操作，也就是运行<code>brew install kubernetes-helm</code>，又出现了错误。</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Error: The `brew link` step did not complete successfully</span><br><span class="line">The formula built, but is not symlinked into /usr/local</span><br><span class="line">Could not symlink bin/helm</span><br><span class="line">Target /usr/local/bin/helm</span><br><span class="line">already exists. You may want to remove it:</span><br><span class="line">  rm '/usr/local/bin/helm'</span><br></pre></td></tr></tbody></table></figure>
+<p>原因似乎是之前已经装了一次helm，文件重复了<br>于是我按照提示，运行</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">rm '/usr/local/bin/helm'</span><br><span class="line">brew link helm</span><br><span class="line">brew install kubernetes-helm</span><br></pre></td></tr></tbody></table></figure>
+<p>安装helm的过程到此结束。</p>
+<p>###4 安装kubectl</p>
+<blockquote>
+<p>kubectl是Kubernetes 命令行工具，使得你可以对 Kubernetes 集群运行命令。 你可以使用 kubectl 来部署应用、监测和管理集群资源以及查看日志。</p>
+</blockquote>
+<p>由于前面我们已经安装了brew，所以可以直接运行<code>brew install kubectl</code> 。<br>再运行<code>kubectl version</code>来确定是否安装成功，当出现类似于</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.2", GitCommit:"faecb196815e248d3ecfb03c680a4507229c2a56", GitTreeState:"clean", BuildDate:"2021-01-14T05:14:17Z", GoVersion:"go1.15.6", Compiler:"gc", Platform:"darwin/amd64"}</span><br><span class="line">Server Version: version.Info{Major:"1", Minor:"18+", GitVersion:"v1.18.4-tke.3", GitCommit:"f8797eb035aca9c928af02ea9a74d232cfd41bc6", GitTreeState:"clean", BuildDate:"2020-10-12T03:32:01Z", GoVersion:"go1.14.8", Compiler:"gc", Platform:"linux/amd64"}</span><br></pre></td></tr></tbody></table></figure>
+<p>的代码时说明已经安装成功啦。</p>
+<p>###5 部署压测集群<br>接着按照文章的内容，运行</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">git clone https://github.com/tkestack/charts.git</span><br><span class="line">cd charts/</span><br><span class="line">helm install your-name incubator/jmeter-suite  （这里的your-name请更改为自己给服务取的名字）</span><br></pre></td></tr></tbody></table></figure>
+<p>然后出现报错</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Error: Kubernetes cluster unreachable: </span><br><span class="line">Get "http://localhost:8080/version?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused</span><br></pre></td></tr></tbody></table></figure>
+<p>这里要配置环境变量KUBECONFIG，需要运行<code>export  KUBECONFIG=集群配置文件的路径</code>，但这个配置是一次性的，终端窗口一关闭或者新开一个终端窗口 就需要重新配置，如果需要更改全局的环境变量需要更改<code>~./bash_profile</code>文件。</p>
+<p>然后解决完上面这个报错后，再重新运行<code>helm install your-name incubator/jmeter-suite</code> ，随后又出现了报错</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Error: rendered manifests contain a resource that already exists. </span><br><span class="line">Unable to continue with install: ServiceAccount "jmeter-influxdb" in namespace "default" exists and cannot be imported into the current release: invalid ownership metadata; </span><br><span class="line">annotation validation error: missing key "meta.helm.sh/release-name": must be set to "test"; annotation validation error: missing key "meta.helm.sh/release-namespace": must be set to "default"</span><br></pre></td></tr></tbody></table></figure>
+<p>呃大概意思就是本地 已经有了一个namespace为default的jmeter了，解决这个错误挺简单</p>
+<ul>
+<li>1 运行<code>helm list --all --all-namespaces</code>，查看系统里所有的releases。</li>
+<li>2 运行 <code>helm uninstall jmeter -n default</code>，卸载这个namespace为default的jmeter。</li>
+</ul>
+<p>随后便可以安装jmeter了，重新运行<code>helm install your-name incubator/jmeter-suite</code> ，这次成功了，随后出现</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">NAME: test</span><br><span class="line">LAST DEPLOYED: Wed Jan 27 17:18:21 2021</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br></pre></td></tr></tbody></table></figure>
+<p>###6 编写脚本<br>####打开jmeter工具<br>在<a href="http://jmeter.apache.org/download_jmeter.cgi">Jmeter官网</a>下载好jmeter，我下载的是如图的黑色字体版本。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128112808907-709044756.png"></p>
+<p>接着我双击/bin目录下的ApacheJMeter.jar文件，打不开。就算把电脑的那个安全性提醒关掉也打不开，好吧，运行下面的命令强制打开<br><code>java -jar /Users/chrystal/Documents/apache-jmeter-5.4.1\ 2/bin/ApacheJMeter.jar (请把后面的路径改为自己存放文件的路径)</code><br>此时命令行如下图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153435642-204495638.png"><br>这说明！不能用这个窗口来跑测试脚本！所以我们要新开一个终端窗口进行后面的操作。<strong>新开的终端窗口记得配置kubernetes环境变量。</strong></p>
+<p>该jar包打开的界面如下<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113245718-1612241731.png"></p>
+<p>可以把原文章中提到的demo测试脚本用它打开，如图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113956129-1944218852.png"></p>
+<p>接下来参考demo脚本写一个自己的脚本，具体的基础设置解释在原文章里有。那么测试一下<a href="https://home.cnblogs.com/blog/">博客园</a>的接口吧。</p>
+<p>####设置脚本<br>在jmeter处新建个文件，添加线程组<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153845661-1981468078.png"><br>下面红框处是我更改后的配置，重要的是我设置了5000个线程，循环2次。*<em>（</em>我后来改了，因为线程组太多了，测试停不下来，改成了50x200）**<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154430799-1150394626.png"><br>右键线程组，添加http请求，并设置IP地址。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154726479-1291219254.png"><br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154932494-1538521586.png"><br>到这里我们基本配置好了线程组的内容，也就是说我们在这次测试中会向博客园发送10000个http请求来测试它的承受能力，但是我们还需要对返回的结果进行分析，所以还要再添加一些监听器来处理结果。</p>
+<ul>
+<li>添加后端监听器<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128160255678-365071639.png"><br>对其进行简单设置<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128171407839-982811206.png"></li>
+<li>添加察看结果树<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128155849233-319381560.png"><br>自己喜欢啥就添加啥吧，我感觉作用都差不多，在这里我添加了<strong>察看结果树</strong>和<strong>汇总图</strong>。</li>
+</ul>
+<p>配置完所有东西后，我们运行一下脚本看看有无错误。<br>果然有错误啊，我的人生果然不会这么一帆风顺啊（）运行一会儿很快就退出了，点击察看结果树出来的全是错误，<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128162605380-123415813.png"><br>然后点击响应数据去查看返回了啥错误<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128163131165-971324307.png"><br>这里说请求的host的格式错误。经过我的一番研究，原来我在上面的设置IP地址时直接复制了博客园的主页，包含了特殊符号。也就是说具体的路径不能写在服务器IP地址那里，正确写法应该是这样<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128164451383-1237225730.png"><br>改完以后再运行，就非常顺利，如图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128165055353-1436304318.png"></p>
+<p>脚本编写到此完成！</p>
+<p>###7 发起测试<br>运行<code>kubectl get pods </code>确认一下有没有连接到kubernetes集群，出现了类似于</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">NAME                                              READY   STATUS    RESTARTS   AGE</span><br><span class="line">jmeter-influxdb-0                                 1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-master-77749c5845-89c6w   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-2hxvg   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-fztws   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-lmsdw   1/1     Running   0          23h</span><br><span class="line">test-grafana-584875d9d4-zsfzz                     1/1     Running   0          23h</span><br></pre></td></tr></tbody></table></figure>
+<p>的内容就是连接成功了。<br>然后运行<code>sh start_test.sh 你的文件目录</code>，就可以在集群上进行测试了。</p>
+<p>###8 查看结果<br>运行完成以后终端窗口会出现</p>
+<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Creating summariser &lt;summary&gt;</span><br><span class="line">Created the tree successfully using /jmeter/test2.jmx</span><br><span class="line">Configuring remote engine: 192.168.0.131</span><br><span class="line">Configuring remote engine: 192.168.0.189</span><br><span class="line">Configuring remote engine: 192.168.0.134</span><br><span class="line">Starting distributed test with remote engines: [192.168.0.189, 192.168.0.134, 192.168.0.131] @ Thu Jan 28 09:16:07 UTC 2021 (1611825367766)</span><br><span class="line">Remote engines have been started:[192.168.0.189, 192.168.0.134, 192.168.0.131]</span><br><span class="line">Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445</span><br><span class="line">summary +   3104 in 00:00:22 =  143.4/s Avg:   598 Min:    40 Max: 16565 Err:     6 (0.19%) Active: 150 Started: 150 Finished: 0</span><br><span class="line">summary +   4400 in 00:00:30 =  146.3/s Avg:   772 Min:    41 Max: 32547 Err:     4 (0.09%) Active: 150 Started: 150 Finished: 0</span><br><span class="line">summary =   7504 in 00:00:52 =  145.1/s Avg:   700 Min:    40 Max: 32547 Err:    10 (0.13%)</span><br><span class="line">summary +   4600 in 00:00:31 =  150.6/s Avg:   854 Min:    40 Max: 64926 Err:     7 (0.15%) Active: 149 Started: 150 Finished: 1</span><br><span class="line">summary =  12104 in 00:01:22 =  147.1/s Avg:   759 Min:    40 Max: 64926 Err:    17 (0.14%)</span><br><span class="line">summary +   4400 in 00:00:30 =  149.0/s Avg:   742 Min:    42 Max: 68044 Err:     2 (0.05%) Active: 132 Started: 150 Finished: 18</span><br><span class="line">summary =  16504 in 00:01:52 =  147.6/s Avg:   754 Min:    40 Max: 68044 Err:    19 (0.12%)</span><br><span class="line">summary +   4500 in 00:00:30 =  150.5/s Avg:  1100 Min:    42 Max: 131100 Err:    13 (0.29%) Active: 98 Started: 150 Finished: 52</span><br><span class="line">summary =  21004 in 00:02:22 =  148.2/s Avg:   828 Min:    40 Max: 131100 Err:    32 (0.15%)</span><br><span class="line">summary +   4600 in 00:00:30 =  153.0/s Avg:   801 Min:    41 Max: 130543 Err:    11 (0.24%) Active: 51 Started: 150 Finished: 99</span><br><span class="line">summary =  25604 in 00:02:52 =  149.1/s Avg:   823 Min:    40 Max: 131100 Err:    43 (0.17%)</span><br><span class="line">summary +   4396 in 00:01:12 =   61.0/s Avg:   438 Min:    40 Max: 131063 Err:     7 (0.16%) Active: 0 Started: 150 Finished: 150</span><br><span class="line">summary =  30000 in 00:04:04 =  123.0/s Avg:   767 Min:    40 Max: 131100 Err:    50 (0.17%)</span><br><span class="line">Tidying up remote @ Thu Jan 28 09:20:12 UTC 2021 (1611825612504)</span><br><span class="line">... end of run</span><br></pre></td></tr></tbody></table></figure>
+<p>然后原文章很详细地写了如何查看结果，这里省略。</p>
+]]></content>
+      <tags>
+        <tag>JMeter</tag>
+        <tag>压力测试</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【新手必读】关于压力测试不得不说的二三事</title>
     <url>/blog/2021/02/01/pressure-testing/</url>
     <content><![CDATA[<p>注：本文并不百分百是原创，参考资料已经列在文章最下方。</p>
@@ -195,85 +274,6 @@
 ]]></content>
       <tags>
         <tag>压力测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>在Mac上利用压测工具Jmeter-Suite进行一次压测实践的保姆级详细步骤（参考腾讯云文章）</title>
-    <url>/blog/2021/02/01/jmeter-test/</url>
-    <content><![CDATA[<p>##参考的文章<br><a href="https://cloud.tencent.com/developer/article/1776927">压测工具Jmeter-Suite详细操作步骤</a></p>
-<p>##写此文的目的<br>由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正<strong>零基础</strong>地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。</p>
-<a id="more"></a>
-
-<p>##需要的背景知识</p>
-<ul>
-<li>阅读《kubernetes权威指南》第一章  （了解kubernetes的基本概念）</li>
-<li>阅读 <a href="https://www.zhihu.com/column/p/26729512">JMeter介绍</a>   （了解jmeter的作用）</li>
-</ul>
-<p>##我的系统<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128192542201-300916945.png"></p>
-<p>##详细步骤<br>省略购买压测机器部分的内容，直接跳到<strong>压测工具安装</strong>部分开始 。<br>###1 安装brew</p>
-<blockquote>
-<p>brew是一个mac上面很好用的软件管理系统，可以简化mac上的安装过程。</p>
-</blockquote>
-<p>我用了一个知乎专栏上的自动化脚本，链接是<a href="https://zhuanlan.zhihu.com/p/111014448">Homebrew国内如何自动安装（国内地址）</a> ，真诚表白作者，原本下载速度很慢的，现在下载速度飞升 T^T<br>ps安装期间我遇到了各种问题，因为我原本的mac系统很低，安装了低版本的brew，不知道啥原因死活装不上新版本，我干脆重新装了个机，重新安装，就非常顺利</p>
-<p>###2 安装wget</p>
-<blockquote>
-<p>Linux系统上一个下载文件的工具。</p>
-</blockquote>
-<p>其实我感觉它的功能和brew挺像的，但由于我参考的文章里用了wget那我就用吧（）<br>用<code>brew install wget</code>命令，我在这一步很顺利，省略之 。</p>
-<p>###3 安装helm</p>
-<blockquote>
-<p>Helm 是Deis 开发的一个用于Kubernetes 应用的包管理工具，主要用来管理Charts。<br>chart 是描述相关的一组Kubernetes资源的文件集合。单个chart可能用于部署简单的东西，比如memcached pod，或者一些复杂的东西，比如完整的具有HTTP 服务，数据库，缓存等的Web 应用程序堆栈。chart通过创建为特定目录树的文件，将它们打包到版本化的压缩包，然后进行部署。</p>
-</blockquote>
-<p>按照文档上的操作，我在运行完</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">wget https://get.helm.sh/helm-v3.2.1-linux-amd64.tar.gz </span><br><span class="line">tar -zxvf helm-v3.2.1-linux-amd64.tar.gz </span><br><span class="line">cp linux-amd64/helm /usr/local/bin/</span><br></pre></td></tr></tbody></table></figure>
-<p>后，出现了<code>zsh: exec format error: helm </code>的报错 ，简单搜索了一下，似乎是无法解析文件？于是我又重新进行安装helm的操作，也就是运行<code>brew install kubernetes-helm</code>，又出现了错误。</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Error: The `brew link` step did not complete successfully</span><br><span class="line">The formula built, but is not symlinked into /usr/local</span><br><span class="line">Could not symlink bin/helm</span><br><span class="line">Target /usr/local/bin/helm</span><br><span class="line">already exists. You may want to remove it:</span><br><span class="line">  rm '/usr/local/bin/helm'</span><br></pre></td></tr></tbody></table></figure>
-<p>原因似乎是之前已经装了一次helm，文件重复了<br>于是我按照提示，运行</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">rm '/usr/local/bin/helm'</span><br><span class="line">brew link helm</span><br><span class="line">brew install kubernetes-helm</span><br></pre></td></tr></tbody></table></figure>
-<p>安装helm的过程到此结束。</p>
-<p>###4 安装kubectl</p>
-<blockquote>
-<p>kubectl是Kubernetes 命令行工具，使得你可以对 Kubernetes 集群运行命令。 你可以使用 kubectl 来部署应用、监测和管理集群资源以及查看日志。</p>
-</blockquote>
-<p>由于前面我们已经安装了brew，所以可以直接运行<code>brew install kubectl</code> 。<br>再运行<code>kubectl version</code>来确定是否安装成功，当出现类似于</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.2", GitCommit:"faecb196815e248d3ecfb03c680a4507229c2a56", GitTreeState:"clean", BuildDate:"2021-01-14T05:14:17Z", GoVersion:"go1.15.6", Compiler:"gc", Platform:"darwin/amd64"}</span><br><span class="line">Server Version: version.Info{Major:"1", Minor:"18+", GitVersion:"v1.18.4-tke.3", GitCommit:"f8797eb035aca9c928af02ea9a74d232cfd41bc6", GitTreeState:"clean", BuildDate:"2020-10-12T03:32:01Z", GoVersion:"go1.14.8", Compiler:"gc", Platform:"linux/amd64"}</span><br></pre></td></tr></tbody></table></figure>
-<p>的代码时说明已经安装成功啦。</p>
-<p>###5 部署压测集群<br>接着按照文章的内容，运行</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">git clone https://github.com/tkestack/charts.git</span><br><span class="line">cd charts/</span><br><span class="line">helm install your-name incubator/jmeter-suite  （这里的your-name请更改为自己给服务取的名字）</span><br></pre></td></tr></tbody></table></figure>
-<p>然后出现报错</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Error: Kubernetes cluster unreachable: </span><br><span class="line">Get "http://localhost:8080/version?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused</span><br></pre></td></tr></tbody></table></figure>
-<p>这里要配置环境变量KUBECONFIG，需要运行<code>export  KUBECONFIG=集群配置文件的路径</code>，但这个配置是一次性的，终端窗口一关闭或者新开一个终端窗口 就需要重新配置，如果需要更改全局的环境变量需要更改<code>~./bash_profile</code>文件。</p>
-<p>然后解决完上面这个报错后，再重新运行<code>helm install your-name incubator/jmeter-suite</code> ，随后又出现了报错</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Error: rendered manifests contain a resource that already exists. </span><br><span class="line">Unable to continue with install: ServiceAccount "jmeter-influxdb" in namespace "default" exists and cannot be imported into the current release: invalid ownership metadata; </span><br><span class="line">annotation validation error: missing key "meta.helm.sh/release-name": must be set to "test"; annotation validation error: missing key "meta.helm.sh/release-namespace": must be set to "default"</span><br></pre></td></tr></tbody></table></figure>
-<p>呃大概意思就是本地 已经有了一个namespace为default的jmeter了，解决这个错误挺简单</p>
-<ul>
-<li>1 运行<code>helm list --all --all-namespaces</code>，查看系统里所有的releases。</li>
-<li>2 运行 <code>helm uninstall jmeter -n default</code>，卸载这个namespace为default的jmeter。</li>
-</ul>
-<p>随后便可以安装jmeter了，重新运行<code>helm install your-name incubator/jmeter-suite</code> ，这次成功了，随后出现</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">NAME: test</span><br><span class="line">LAST DEPLOYED: Wed Jan 27 17:18:21 2021</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br></pre></td></tr></tbody></table></figure>
-<p>###6 编写脚本<br>####打开jmeter工具<br>在<a href="http://jmeter.apache.org/download_jmeter.cgi">Jmeter官网</a>下载好jmeter，我下载的是如图的黑色字体版本。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128112808907-709044756.png"></p>
-<p>接着我双击/bin目录下的ApacheJMeter.jar文件，打不开。就算把电脑的那个安全性提醒关掉也打不开，好吧，运行下面的命令强制打开<br><code>java -jar /Users/chrystal/Documents/apache-jmeter-5.4.1\ 2/bin/ApacheJMeter.jar (请把后面的路径改为自己存放文件的路径)</code><br>此时命令行如下图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153435642-204495638.png"><br>这说明！不能用这个窗口来跑测试脚本！所以我们要新开一个终端窗口进行后面的操作。<strong>新开的终端窗口记得配置kubernetes环境变量。</strong></p>
-<p>该jar包打开的界面如下<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113245718-1612241731.png"></p>
-<p>可以把原文章中提到的demo测试脚本用它打开，如图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113956129-1944218852.png"></p>
-<p>接下来参考demo脚本写一个自己的脚本，具体的基础设置解释在原文章里有。那么测试一下<a href="https://home.cnblogs.com/blog/">博客园</a>的接口吧。</p>
-<p>####设置脚本<br>在jmeter处新建个文件，添加线程组<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153845661-1981468078.png"><br>下面红框处是我更改后的配置，重要的是我设置了5000个线程，循环2次。*<em>（</em>我后来改了，因为线程组太多了，测试停不下来，改成了50x200）**<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154430799-1150394626.png"><br>右键线程组，添加http请求，并设置IP地址。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154726479-1291219254.png"><br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154932494-1538521586.png"><br>到这里我们基本配置好了线程组的内容，也就是说我们在这次测试中会向博客园发送10000个http请求来测试它的承受能力，但是我们还需要对返回的结果进行分析，所以还要再添加一些监听器来处理结果。</p>
-<ul>
-<li>添加后端监听器<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128160255678-365071639.png"><br>对其进行简单设置<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128171407839-982811206.png"></li>
-<li>添加察看结果树<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128155849233-319381560.png"><br>自己喜欢啥就添加啥吧，我感觉作用都差不多，在这里我添加了<strong>察看结果树</strong>和<strong>汇总图</strong>。</li>
-</ul>
-<p>配置完所有东西后，我们运行一下脚本看看有无错误。<br>果然有错误啊，我的人生果然不会这么一帆风顺啊（）运行一会儿很快就退出了，点击察看结果树出来的全是错误，<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128162605380-123415813.png"><br>然后点击响应数据去查看返回了啥错误<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128163131165-971324307.png"><br>这里说请求的host的格式错误。经过我的一番研究，原来我在上面的设置IP地址时直接复制了博客园的主页，包含了特殊符号。也就是说具体的路径不能写在服务器IP地址那里，正确写法应该是这样<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128164451383-1237225730.png"><br>改完以后再运行，就非常顺利，如图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128165055353-1436304318.png"></p>
-<p>脚本编写到此完成！</p>
-<p>###7 发起测试<br>运行<code>kubectl get pods </code>确认一下有没有连接到kubernetes集群，出现了类似于</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">NAME                                              READY   STATUS    RESTARTS   AGE</span><br><span class="line">jmeter-influxdb-0                                 1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-master-77749c5845-89c6w   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-2hxvg   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-fztws   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-lmsdw   1/1     Running   0          23h</span><br><span class="line">test-grafana-584875d9d4-zsfzz                     1/1     Running   0          23h</span><br></pre></td></tr></tbody></table></figure>
-<p>的内容就是连接成功了。<br>然后运行<code>sh start_test.sh 你的文件目录</code>，就可以在集群上进行测试了。</p>
-<p>###8 查看结果<br>运行完成以后终端窗口会出现</p>
-<figure class="highlight plain"><table><tbody><tr><td class="code"><pre><span class="line">Creating summariser &lt;summary&gt;</span><br><span class="line">Created the tree successfully using /jmeter/test2.jmx</span><br><span class="line">Configuring remote engine: 192.168.0.131</span><br><span class="line">Configuring remote engine: 192.168.0.189</span><br><span class="line">Configuring remote engine: 192.168.0.134</span><br><span class="line">Starting distributed test with remote engines: [192.168.0.189, 192.168.0.134, 192.168.0.131] @ Thu Jan 28 09:16:07 UTC 2021 (1611825367766)</span><br><span class="line">Remote engines have been started:[192.168.0.189, 192.168.0.134, 192.168.0.131]</span><br><span class="line">Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445</span><br><span class="line">summary +   3104 in 00:00:22 =  143.4/s Avg:   598 Min:    40 Max: 16565 Err:     6 (0.19%) Active: 150 Started: 150 Finished: 0</span><br><span class="line">summary +   4400 in 00:00:30 =  146.3/s Avg:   772 Min:    41 Max: 32547 Err:     4 (0.09%) Active: 150 Started: 150 Finished: 0</span><br><span class="line">summary =   7504 in 00:00:52 =  145.1/s Avg:   700 Min:    40 Max: 32547 Err:    10 (0.13%)</span><br><span class="line">summary +   4600 in 00:00:31 =  150.6/s Avg:   854 Min:    40 Max: 64926 Err:     7 (0.15%) Active: 149 Started: 150 Finished: 1</span><br><span class="line">summary =  12104 in 00:01:22 =  147.1/s Avg:   759 Min:    40 Max: 64926 Err:    17 (0.14%)</span><br><span class="line">summary +   4400 in 00:00:30 =  149.0/s Avg:   742 Min:    42 Max: 68044 Err:     2 (0.05%) Active: 132 Started: 150 Finished: 18</span><br><span class="line">summary =  16504 in 00:01:52 =  147.6/s Avg:   754 Min:    40 Max: 68044 Err:    19 (0.12%)</span><br><span class="line">summary +   4500 in 00:00:30 =  150.5/s Avg:  1100 Min:    42 Max: 131100 Err:    13 (0.29%) Active: 98 Started: 150 Finished: 52</span><br><span class="line">summary =  21004 in 00:02:22 =  148.2/s Avg:   828 Min:    40 Max: 131100 Err:    32 (0.15%)</span><br><span class="line">summary +   4600 in 00:00:30 =  153.0/s Avg:   801 Min:    41 Max: 130543 Err:    11 (0.24%) Active: 51 Started: 150 Finished: 99</span><br><span class="line">summary =  25604 in 00:02:52 =  149.1/s Avg:   823 Min:    40 Max: 131100 Err:    43 (0.17%)</span><br><span class="line">summary +   4396 in 00:01:12 =   61.0/s Avg:   438 Min:    40 Max: 131063 Err:     7 (0.16%) Active: 0 Started: 150 Finished: 150</span><br><span class="line">summary =  30000 in 00:04:04 =  123.0/s Avg:   767 Min:    40 Max: 131100 Err:    50 (0.17%)</span><br><span class="line">Tidying up remote @ Thu Jan 28 09:20:12 UTC 2021 (1611825612504)</span><br><span class="line">... end of run</span><br></pre></td></tr></tbody></table></figure>
-<p>然后原文章很详细地写了如何查看结果，这里省略。</p>
-]]></content>
-      <tags>
-        <tag>压力测试</tag>
-        <tag>JMeter</tag>
       </tags>
   </entry>
 </search>
