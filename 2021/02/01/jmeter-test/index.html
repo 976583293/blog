@@ -24,36 +24,36 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"976583293.github.io","root":"/blog/","images":"/blog/images","scheme":"Muse","version":"8.2.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true}};
   </script>
-<meta name="description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。 需要的背">
+<meta name="description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在Mac上利用压测工具Jmeter-Suite进行一次压测实践的保姆级详细步骤（参考腾讯云文章）">
 <meta property="og:url" content="https://976583293.github.io/blog/2021/02/01/jmeter-test/index.html">
 <meta property="og:site_name" content="Nana&#39;s Blog">
-<meta property="og:description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。 需要的背">
+<meta property="og:description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128192542201-300916945.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128112808907-709044756.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153435642-204495638.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113245718-1612241731.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113956129-1944218852.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153845661-1981468078.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154430799-1150394626.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154726479-1291219254.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154932494-1538521586.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128160255678-365071639.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128171407839-982811206.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128155849233-319381560.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128162605380-123415813.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128163131165-971324307.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128164451383-1237225730.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128165055353-1436304318.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaTk6.png">
+<meta property="og:image" content="https://imgchr.com/i/yeafX9">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yea4mR.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaITx.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yea501.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yea7tK.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaHfO.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaL1e.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaqpD.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaO6H.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaXXd.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeax0I.png">
+<meta property="og:image" content="https://imgchr.com/i/yeavnA">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yedpAP.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yeaz7t.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/02/01/yed9tf.png">
 <meta property="article:published_time" content="2021-02-01T12:19:31.000Z">
-<meta property="article:modified_time" content="2021-02-01T12:25:16.653Z">
+<meta property="article:modified_time" content="2021-02-01T12:38:01.182Z">
 <meta property="article:author" content="Nana">
 <meta property="article:tag" content="JMeter">
 <meta property="article:tag" content="压力测试">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128192542201-300916945.png">
+<meta name="twitter:image" content="https://s3.ax1x.com/2021/02/01/yeaTk6.png">
 
 
 <link rel="canonical" href="https://976583293.github.io/blog/2021/02/01/jmeter-test/">
@@ -301,7 +301,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-02-01 20:19:31 / 修改时间：20:25:16" itemprop="dateCreated datePublished" datetime="2021-02-01T20:19:31+08:00">2021-02-01</time>
+      <time title="创建时间：2021-02-01 20:19:31 / 修改时间：20:38:01" itemprop="dateCreated datePublished" datetime="2021-02-01T20:19:31+08:00">2021-02-01</time>
     </span>
 
   
@@ -323,11 +323,13 @@
     <div class="post-body" itemprop="articleBody">
         <h2 id="参考的文章"><a href="#参考的文章" class="headerlink" title="参考的文章"></a>参考的文章</h2><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1776927">压测工具Jmeter-Suite详细操作步骤</a></p>
 <h2 id="写此文的目的"><a href="#写此文的目的" class="headerlink" title="写此文的目的"></a>写此文的目的</h2><p>由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正<strong>零基础</strong>地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。</p>
+<a id="more"></a>
+
 <h2 id="需要的背景知识"><a href="#需要的背景知识" class="headerlink" title="需要的背景知识"></a>需要的背景知识</h2><ul>
 <li>阅读《kubernetes权威指南》第一章  （了解kubernetes的基本概念）</li>
 <li>阅读 <a target="_blank" rel="noopener" href="https://www.zhihu.com/column/p/26729512">JMeter介绍</a>   （了解jmeter的作用）</li>
 </ul>
-<h2 id="我的系统"><a href="#我的系统" class="headerlink" title="我的系统"></a>我的系统</h2><p><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128192542201-300916945.png"></p>
+<h2 id="我的系统"><a href="#我的系统" class="headerlink" title="我的系统"></a>我的系统</h2><p><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaTk6"><img src="https://s3.ax1x.com/2021/02/01/yeaTk6.png" alt="yeaTk6.png"></a></p>
 <h2 id="详细步骤"><a href="#详细步骤" class="headerlink" title="详细步骤"></a>详细步骤</h2><p>省略购买压测机器部分的内容，直接跳到<strong>压测工具安装</strong>部分开始 。</p>
 <h3 id="1-安装brew"><a href="#1-安装brew" class="headerlink" title="1 安装brew"></a>1 安装brew</h3><blockquote>
 <p>brew是一个mac上面很好用的软件管理系统，可以简化mac上的安装过程。</p>
@@ -367,17 +369,17 @@
 </ul>
 <p>随后便可以安装jmeter了，重新运行<code>helm install your-name incubator/jmeter-suite</code> ，这次成功了，随后出现</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NAME: test</span><br><span class="line">LAST DEPLOYED: Wed Jan 27 17:18:21 2021</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="6-编写脚本"><a href="#6-编写脚本" class="headerlink" title="6 编写脚本"></a>6 编写脚本</h3><h4 id="打开jmeter工具"><a href="#打开jmeter工具" class="headerlink" title="打开jmeter工具"></a>打开jmeter工具</h4><p>在<a target="_blank" rel="noopener" href="http://jmeter.apache.org/download_jmeter.cgi">Jmeter官网</a>下载好jmeter，我下载的是如图的黑色字体版本。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128112808907-709044756.png"></p>
-<p>接着我双击/bin目录下的ApacheJMeter.jar文件，打不开。就算把电脑的那个安全性提醒关掉也打不开，好吧，运行下面的命令强制打开<br><code>java -jar /Users/chrystal/Documents/apache-jmeter-5.4.1\ 2/bin/ApacheJMeter.jar (请把后面的路径改为自己存放文件的路径)</code><br>此时命令行如下图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153435642-204495638.png"><br>这说明！不能用这个窗口来跑测试脚本！所以我们要新开一个终端窗口进行后面的操作。<strong>新开的终端窗口记得配置kubernetes环境变量。</strong></p>
-<p>该jar包打开的界面如下<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113245718-1612241731.png"></p>
-<p>可以把原文章中提到的demo测试脚本用它打开，如图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128113956129-1944218852.png"></p>
+<h3 id="6-编写脚本"><a href="#6-编写脚本" class="headerlink" title="6 编写脚本"></a>6 编写脚本</h3><h4 id="打开jmeter工具"><a href="#打开jmeter工具" class="headerlink" title="打开jmeter工具"></a>打开jmeter工具</h4><p>在<a target="_blank" rel="noopener" href="http://jmeter.apache.org/download_jmeter.cgi">Jmeter官网</a>下载好jmeter，我下载的是如图的黑色字体版本。<br><img src="https://imgchr.com/i/yeafX9" alt="![yeafX9.png](https://s3.ax1x.com/2021/02/01/yeafX9.png)"></p>
+<p>接着我双击/bin目录下的ApacheJMeter.jar文件，打不开。就算把电脑的那个安全性提醒关掉也打不开，好吧，运行下面的命令强制打开<br><code>java -jar /Users/chrystal/Documents/apache-jmeter-5.4.1\ 2/bin/ApacheJMeter.jar (请把后面的路径改为自己存放文件的路径)</code><br>此时命令行如下图<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yea4mR"><img src="https://s3.ax1x.com/2021/02/01/yea4mR.png" alt="yea4mR.png"></a><br>这说明！不能用这个窗口来跑测试脚本！所以我们要新开一个终端窗口进行后面的操作。<strong>新开的终端窗口记得配置kubernetes环境变量。</strong></p>
+<p>该jar包打开的界面如下<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaITx"><img src="https://s3.ax1x.com/2021/02/01/yeaITx.png" alt="yeaITx.png"></a></p>
+<p>可以把原文章中提到的demo测试脚本用它打开，如图<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yea501"><img src="https://s3.ax1x.com/2021/02/01/yea501.png" alt="yea501.png"></a></p>
 <p>接下来参考demo脚本写一个自己的脚本，具体的基础设置解释在原文章里有。那么测试一下<a target="_blank" rel="noopener" href="https://home.cnblogs.com/blog/">博客园</a>的接口吧。</p>
-<h4 id="设置脚本"><a href="#设置脚本" class="headerlink" title="设置脚本"></a>设置脚本</h4><p>在jmeter处新建个文件，添加线程组<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128153845661-1981468078.png"><br>下面红框处是我更改后的配置，重要的是我设置了5000个线程，循环2次。*<em>（</em>我后来改了，因为线程组太多了，测试停不下来，改成了50x200）**<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154430799-1150394626.png"><br>右键线程组，添加http请求，并设置IP地址。<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154726479-1291219254.png"><br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128154932494-1538521586.png"><br>到这里我们基本配置好了线程组的内容，也就是说我们在这次测试中会向博客园发送10000个http请求来测试它的承受能力，但是我们还需要对返回的结果进行分析，所以还要再添加一些监听器来处理结果。</p>
+<h4 id="设置脚本"><a href="#设置脚本" class="headerlink" title="设置脚本"></a>设置脚本</h4><p>在jmeter处新建个文件，添加线程组<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yea7tK"><img src="https://s3.ax1x.com/2021/02/01/yea7tK.png" alt="yea7tK.png"></a><br>下面红框处是我更改后的配置，重要的是我设置了5000个线程，循环2次。*<em>（</em>我后来改了，因为线程组太多了，测试停不下来，改成了50x200）**<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaHfO"><img src="https://s3.ax1x.com/2021/02/01/yeaHfO.png" alt="yeaHfO.png"></a><br>右键线程组，添加http请求，并设置IP地址。<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaL1e"><img src="https://s3.ax1x.com/2021/02/01/yeaL1e.png" alt="yeaL1e.png"></a><br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaqpD"><img src="https://s3.ax1x.com/2021/02/01/yeaqpD.png" alt="yeaqpD.png"></a><br>到这里我们基本配置好了线程组的内容，也就是说我们在这次测试中会向博客园发送10000个http请求来测试它的承受能力，但是我们还需要对返回的结果进行分析，所以还要再添加一些监听器来处理结果。</p>
 <ul>
-<li>添加后端监听器<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128160255678-365071639.png"><br>对其进行简单设置<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128171407839-982811206.png"></li>
-<li>添加察看结果树<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128155849233-319381560.png"><br>自己喜欢啥就添加啥吧，我感觉作用都差不多，在这里我添加了<strong>察看结果树</strong>和<strong>汇总图</strong>。</li>
+<li>添加后端监听器<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaO6H"><img src="https://s3.ax1x.com/2021/02/01/yeaO6H.png" alt="yeaO6H.png"></a><br>对其进行简单设置<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaXXd"><img src="https://s3.ax1x.com/2021/02/01/yeaXXd.png" alt="yeaXXd.png"></a></li>
+<li>添加察看结果树<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeax0I"><img src="https://s3.ax1x.com/2021/02/01/yeax0I.png" alt="yeax0I.png"></a><br>自己喜欢啥就添加啥吧，我感觉作用都差不多，在这里我添加了<strong>察看结果树</strong>和<strong>汇总图</strong>。</li>
 </ul>
-<p>配置完所有东西后，我们运行一下脚本看看有无错误。<br>果然有错误啊，我的人生果然不会这么一帆风顺啊（）运行一会儿很快就退出了，点击察看结果树出来的全是错误，<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128162605380-123415813.png"><br>然后点击响应数据去查看返回了啥错误<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128163131165-971324307.png"><br>这里说请求的host的格式错误。经过我的一番研究，原来我在上面的设置IP地址时直接复制了博客园的主页，包含了特殊符号。也就是说具体的路径不能写在服务器IP地址那里，正确写法应该是这样<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128164451383-1237225730.png"><br>改完以后再运行，就非常顺利，如图<br><img src="https://img2020.cnblogs.com/blog/1943681/202101/1943681-20210128165055353-1436304318.png"></p>
+<p>配置完所有东西后，我们运行一下脚本看看有无错误。<br>果然有错误啊，我的人生果然不会这么一帆风顺啊（）运行一会儿很快就退出了，点击察看结果树出来的全是错误，<br><img src="https://imgchr.com/i/yeavnA" alt="![yeavnA.png](https://s3.ax1x.com/2021/02/01/yeavnA.png)"><br>然后点击响应数据去查看返回了啥错误<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yedpAP"><img src="https://s3.ax1x.com/2021/02/01/yedpAP.png" alt="yedpAP.png"></a><br>这里说请求的host的格式错误。经过我的一番研究，原来我在上面的设置IP地址时直接复制了博客园的主页，包含了特殊符号。也就是说具体的路径不能写在服务器IP地址那里，正确写法应该是这样<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yeaz7t"><img src="https://s3.ax1x.com/2021/02/01/yeaz7t.png" alt="yeaz7t.png"></a><br>改完以后再运行，就非常顺利，如图<br><a target="_blank" rel="noopener" href="https://imgchr.com/i/yed9tf"><img src="https://s3.ax1x.com/2021/02/01/yed9tf.png" alt="yed9tf.png"></a></p>
 <p>脚本编写到此完成！</p>
 <h3 id="7-发起测试"><a href="#7-发起测试" class="headerlink" title="7 发起测试"></a>7 发起测试</h3><p>运行<code>kubectl get pods </code>确认一下有没有连接到kubernetes集群，出现了类似于</p>
 <figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NAME                                              READY   STATUS    RESTARTS   AGE</span><br><span class="line">jmeter-influxdb-0                                 1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-master-77749c5845-89c6w   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-2hxvg   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-fztws   1/1     Running   0          23h</span><br><span class="line">test-distributed-jmeter-server-5556bbf5fc-lmsdw   1/1     Running   0          23h</span><br><span class="line">test-grafana-584875d9d4-zsfzz                     1/1     Running   0          23h</span><br></pre></td></tr></tbody></table></figure>
