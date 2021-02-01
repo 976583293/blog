@@ -22,12 +22,12 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"976583293.github.io","root":"/blog/","images":"/blog/images","scheme":"Muse","version":"8.2.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true}};
+    var CONFIG = {"hostname":"nanagan.github.io","root":"/blog/","images":"/blog/images","scheme":"Muse","version":"8.2.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true}};
   </script>
 <meta name="description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在Mac上利用压测工具Jmeter-Suite进行一次压测实践的保姆级详细步骤（参考腾讯云文章）">
-<meta property="og:url" content="https://976583293.github.io/blog/2021/02/01/jmeter-test/index.html">
+<meta property="og:url" content="https://nanagan.github.io/blog/2021/02/01/jmeter-test/index.html">
 <meta property="og:site_name" content="Nana&#39;s Blog">
 <meta property="og:description" content="参考的文章压测工具Jmeter-Suite详细操作步骤 写此文的目的由于我是刚开始接触kubernetes和jmeter，所以在学习过程中遇到了很多很多问题，同时我很烦恼为什么网上没有文章是从真正零基础地记录部署的过程，比如安装brew和helm3之类的步骤都被省略了，像我这种菜菜就很抓瞎。所以在我终于摸到了kubernetes世界的大门、碰到了压测的边边后，我决定写一篇文章回馈菜菜们。">
 <meta property="og:locale" content="zh_CN">
@@ -56,7 +56,7 @@
 <meta name="twitter:image" content="https://s3.ax1x.com/2021/02/01/yeaTk6.png">
 
 
-<link rel="canonical" href="https://976583293.github.io/blog/2021/02/01/jmeter-test/">
+<link rel="canonical" href="https://nanagan.github.io/blog/2021/02/01/jmeter-test/">
 
 
 <script class="page-configurations">
@@ -151,6 +151,7 @@
         <li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
         <li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
         <li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/blog/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -236,7 +237,7 @@
 </div>
   <div class="links-of-author site-overview-item animated">
       <span class="links-of-author-item">
-        <a href="https://github.com/976583293" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;976583293" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/nanagan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nanagan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
         <a href="/blog/976583293@qq.com" title="E-Mail → 976583293@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
@@ -276,7 +277,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://976583293.github.io/blog/2021/02/01/jmeter-test/">
+    <link itemprop="mainEntityOfPage" href="https://nanagan.github.io/blog/2021/02/01/jmeter-test/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://i.loli.net/2020/02/24/TeXmujvZEzAf3HP.jpg">
